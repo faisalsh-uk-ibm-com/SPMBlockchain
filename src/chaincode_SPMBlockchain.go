@@ -18,7 +18,7 @@ package main
 
 import (
 	//"bytes"
-	//"encoding/json"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -144,13 +144,13 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 	key = args[0] //rename for funsies
 	value = args[1]
 
-//	personTransactionListNew := PersonTransactionList{}
-//
-//	err = json.Unmarshal([]byte(value), &personTransactionListNew)
-//
-//	if err != nil {
-//		return nil, err
-//	}
+	personTransactionListNew := PersonTransactionList{}
+
+	err = json.Unmarshal([]byte(value), &personTransactionListNew)
+
+	if err != nil {
+		return nil, err
+	}
 
 //	personTransactionListExisting := PersonTransactionList{}
 
