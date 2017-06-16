@@ -152,17 +152,19 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 		return nil, err
 	}
 
-	//personTransactionListExisting := PersonTransactionList{}
+	personTransactionListExisting := PersonTransactionList{}
 
 	argsRead := [] string {args[0]} 
 
-	_ , err = t.read(stub, argsRead)
+	valAsbytes := [] byte {}
+
+	valAsbytes, err = t.read(stub, argsRead)
 	
 	if err != nil {
 		return nil, err
 	}
 
-//	err = json.Unmarshal([]byte(valAsbytes), &personTransactionListExisting)
+	err = json.Unmarshal([]byte(valAsbytes), &personTransactionListExisting)
 
 	if err != nil {
 		return nil, err
