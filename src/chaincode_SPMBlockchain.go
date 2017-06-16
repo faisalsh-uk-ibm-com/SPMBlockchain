@@ -149,9 +149,13 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 	
 	personTransactionList := PersonTransactionList{}
 	
-	json.Unmarshal([]byte(value), &personTransactionList)
+	err = json.Unmarshal([]byte(value), &personTransactionList)
 	
-	fmt.Println("*******************createpayment");
+	if err != nil {
+		return nil, err
+	}
+	
+	fmt.Printf("*******************createpayment");
 	fmt.Println(personTransactionList);
 	
 	
