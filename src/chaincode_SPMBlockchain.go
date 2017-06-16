@@ -30,20 +30,17 @@ type SimpleChaincode struct {
 }
 
 type PersonTransactionList struct {
-	
-	Nino string `json:"nino"`
-	Transactions [] Transaction `json:"transactions"`
+	Nino         string        `json:"nino"`
+	Transactions []Transaction `json:"transactions"`
 }
 
 type Transaction struct {
-	
-	TransactionID string `json:"transactionID"`
-	Amount float64 `json:"amount"`
-	coverPeriod string `json:"coverPeriod"`
-	owningSystem string `json:"owningSystem"`
-	paymentStatus string `json:"paymentStatus"`
+	TransactionID string  `json:"transactionID"`
+	Amount        float64 `json:"amount"`
+	coverPeriod   string  `json:"coverPeriod"`
+	owningSystem  string  `json:"owningSystem"`
+	paymentStatus string  `json:"paymentStatus"`
 }
-
 
 func main() {
 	err := shim.Start(new(SimpleChaincode))
@@ -146,21 +143,31 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 
 	key = args[0] //rename for funsies
 	value = args[1]
-	
-	personTransactionList := PersonTransactionList{}
-	
-	err = json.Unmarshal([]byte(value), &personTransactionList)
-	
+
+	personTransactionListNew := PersonTransactionList{}
+
+	err = json.Unmarshal([]byte(value), &personTransactionListNew)
+
 	if err != nil {
 		return nil, err
 	}
-	
-	fmt.Printf("*******************createpayment");
-	fmt.Println(personTransactionList);
-	
-	
-	
+
+	personTransactionListExisting := PersonTransactionList{}
+
+	valAsbytes, err := t.read(stub, args)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal([]byte(valAsbytes), &personTransactionListExisting)
+
+	if err != nil {
+		return nil, err
+	}
+
 	err = stub.PutState(key, []byte(value)) //write the variable into the chaincode state
+	
 	if err != nil {
 		return nil, err
 	}
