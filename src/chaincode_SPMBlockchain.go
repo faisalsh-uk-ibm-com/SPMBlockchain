@@ -152,6 +152,11 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 		return nil, err
 	}
 
+	for _, newTransaction := range personTransactionListNew.Transactions {
+		
+		fmt.Printf("Transaction ID is: %s", newTransaction.TransactionID)
+	}
+
 	personTransactionListExisting := PersonTransactionList{}
 
 	argsRead := [] string {args[0]} 
