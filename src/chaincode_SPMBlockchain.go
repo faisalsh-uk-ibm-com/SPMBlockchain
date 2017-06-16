@@ -161,18 +161,21 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 	valAsbytes, err = t.read(stub, argsRead)
 	
 	if err != nil {
+		fmt.Printf("In t.read error: %s", err)
 		return nil, err
 	}
 
 	err = json.Unmarshal([]byte(valAsbytes), &personTransactionListExisting)
 
 	if err != nil {
+		fmt.Printf("In json.Unmarshal error: %s", err)
 		return nil, err
 	}
 
 	err = stub.PutState(key, []byte(value)) //write the variable into the chaincode state
 	
 	if err != nil {
+		fmt.Printf("In putstate error:  %s", err)
 		return nil, err
 	}
 	return nil, nil
