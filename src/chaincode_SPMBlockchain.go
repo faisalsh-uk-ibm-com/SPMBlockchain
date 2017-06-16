@@ -154,7 +154,9 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 
 	personTransactionListExisting := PersonTransactionList{}
 
-	valAsbytes, err := t.read(stub, args)
+	argsRead := [] string {args[0]} 
+
+	valAsbytes, err := t.read(stub, argsRead)
 
 	if err != nil {
 		return nil, err
