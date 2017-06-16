@@ -178,10 +178,23 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 		
 		fmt.Printf("New Transaction ID second loop is: %s", newTransaction.TransactionID)
 		
+		transactionFound := false
+		
 		for _, oldTransaction := range personTransactionListExisting.Transactions {
 			
 			fmt.Printf("Old Transaction ID second loop is: %s", oldTransaction.TransactionID)
-		}		
+			
+			if newTransaction.TransactionID == oldTransaction.TransactionID {
+				transactionFound = true
+				break
+			}
+		}	
+		
+		if !transactionFound {
+			
+			personTransactionListExisting.Transactions = 
+				append(personTransactionListExisting.Transactions, newTransaction)	
+		}	
 	}
 	
 
