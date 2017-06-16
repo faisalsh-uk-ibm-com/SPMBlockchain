@@ -17,6 +17,8 @@ limitations under the License.
 package main
 
 import (
+	//"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -26,6 +28,22 @@ import (
 // SimpleChaincode example simple Chaincode implementation
 type SimpleChaincode struct {
 }
+
+type PersonTransactionList struct {
+	
+	Nino string `json:"nino"`
+	Transactions [] Transaction `json:"transactions"`
+}
+
+type Transaction struct {
+	
+	TransactionID string `json:"transactionID"`
+	Amount float64 `json:"amount"`
+	coverPeriod string `json:"coverPeriod"`
+	owningSystem string `json:"owningSystem"`
+	paymentStatus string `json:"paymentStatus"`
+}
+
 
 func main() {
 	err := shim.Start(new(SimpleChaincode))
@@ -57,6 +75,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.Init(stub, "init", args)
 	} else if function == "write" {
 		return t.write(stub, args)
+	} else if function == "createPaymentTransaction" {
+		return t.createPaymentTransaction(stub, args)
 	}
 	fmt.Println("invoke did not find func: " + function)
 
@@ -112,4 +132,30 @@ func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) 
 	}
 
 	return valAsbytes, nil
+}
+
+// Create payment transactions for a person
+func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var key, value string
+	var err error
+	fmt.Println("running createPaymentTransaction()")
+
+	if len(args) != 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2. name of the key and value to set")
+	}
+
+	key = args[0] //rename for funsies
+	value = args[1]
+	
+	personTransactionList := PersonTransactionList{}
+	
+	json.Unmarshal([]byte(value), &personTransactionList)
+	
+	fmt.Println(personTransactionList);
+	
+	err = stub.PutState(key, []byte(value)) //write the variable into the chaincode state
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
