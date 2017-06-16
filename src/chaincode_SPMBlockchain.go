@@ -173,6 +173,17 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 	err = json.Unmarshal([]byte(valAsbytes), &personTransactionListExisting)
 
 	fmt.Printf("Old Transaction list is: %s", personTransactionListExisting)
+	
+	for _, newTransaction := range personTransactionListNew.Transactions {
+		
+		fmt.Printf("New Transaction ID second loop is: %s", newTransaction.TransactionID)
+		
+		for _, oldTransaction := range personTransactionListExisting.Transactions {
+			
+			fmt.Printf("Old Transaction ID second loop is: %s", oldTransaction.TransactionID)
+		}		
+	}
+	
 
 	if err != nil {
 		fmt.Printf("In json.Unmarshal error: %s", err)
