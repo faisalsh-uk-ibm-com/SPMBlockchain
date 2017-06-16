@@ -151,7 +151,10 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 	
 	json.Unmarshal([]byte(value), &personTransactionList)
 	
+	fmt.Println("*******************createpayment");
 	fmt.Println(personTransactionList);
+	
+	
 	
 	err = stub.PutState(key, []byte(value)) //write the variable into the chaincode state
 	if err != nil {
