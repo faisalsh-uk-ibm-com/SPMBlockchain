@@ -197,6 +197,7 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 		}	
 	}
 	
+	fmt.Printf("Transaction to be created list is: %s", personTransactionListExisting)
 
 	if err != nil {
 		fmt.Printf("In json.Unmarshal error: %s", err)
