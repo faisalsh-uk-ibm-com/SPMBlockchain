@@ -154,7 +154,7 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 
 	for _, newTransaction := range personTransactionListNew.Transactions {
 		
-		fmt.Printf("New Transaction ID is: %s", newTransaction.TransactionID)
+		fmt.Printf("New Transaction records is: %s", newTransaction)
 	}
 
 	personTransactionListExisting := PersonTransactionList{}
@@ -210,6 +210,8 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 		fmt.Printf("In json.Marshal error: %s", err)
 		return nil, err
 	}	
+	
+	fmt.Printf("Transaction to be created list as bytes: %s", personTransactionListTobeCreatedAsBytes)
 
 	err = stub.PutState(key, personTransactionListTobeCreatedAsBytes)
 	
