@@ -170,7 +170,14 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 		return nil, err
 	}
 
-	err = json.Unmarshal([]byte(valAsbytes), &personTransactionListExisting)
+	if valAsbytes != nil {
+		
+		err = json.Unmarshal([]byte(valAsbytes), &personTransactionListExisting)	
+		
+	} else {
+		
+		personTransactionListExisting.Nino = key
+	}
 
 	fmt.Printf("Old Transaction list is: %s", personTransactionListExisting)
 	
