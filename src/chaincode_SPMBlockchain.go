@@ -37,9 +37,9 @@ type PersonTransactionList struct {
 type Transaction struct {
 	TransactionID string  `json:"transactionID"`
 	Amount        float64 `json:"amount"`
-	coverPeriod   string  `json:"coverPeriod"`
-	owningSystem  string  `json:"owningSystem"`
-	paymentStatus string  `json:"paymentStatus"`
+	CoverPeriod   string  `json:"coverPeriod"`
+	OwningSystem  string  `json:"owningSystem"`
+	PaymentStatus string  `json:"paymentStatus"`
 }
 
 func main() {
