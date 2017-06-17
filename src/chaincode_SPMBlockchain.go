@@ -204,7 +204,14 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 		return nil, err
 	}
 
-	err = stub.PutState(key, []byte(value)) //write the variable into the chaincode state
+	personTransactionListTobeCreatedAsBytes, err := json.Marshal(personTransactionListExisting)
+	
+	if err != nil {
+		fmt.Printf("In json.Marshal error: %s", err)
+		return nil, err
+	}	
+
+	err = stub.PutState(key, personTransactionListTobeCreatedAsBytes)
 	
 	if err != nil {
 		fmt.Printf("In putstate error:  %s", err)
