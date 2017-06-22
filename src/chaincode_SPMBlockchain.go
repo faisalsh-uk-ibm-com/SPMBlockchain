@@ -74,7 +74,10 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.write(stub, args)
 	} else if function == "createPaymentTransaction" {
 		return t.createPaymentTransaction(stub, args)
+	} else if function == "modifyPaymentTransactionOwningSystem" {
+		return t.modifyPaymentTransactionOwningSystem(stub, args)
 	}
+
 	fmt.Println("invoke did not find func: " + function)
 
 	return nil, errors.New("Received unknown function invocation: " + function)
@@ -153,57 +156,57 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 	}
 
 	for _, newTransaction := range personTransactionListNew.Transactions {
-		
+
 		fmt.Printf("New Transaction records is: %s", newTransaction)
 	}
 
 	personTransactionListExisting := PersonTransactionList{}
 
-	argsRead := [] string {args[0]} 
+	argsRead := []string{args[0]}
 
-	valAsbytes := [] byte {}
+	valAsbytes := []byte{}
 
 	valAsbytes, err = t.read(stub, argsRead)
-	
+
 	if err != nil {
 		fmt.Printf("In t.read error: %s", err)
 		return nil, err
 	}
 
 	if valAsbytes != nil {
-		
-		err = json.Unmarshal([]byte(valAsbytes), &personTransactionListExisting)	
-		
+
+		err = json.Unmarshal([]byte(valAsbytes), &personTransactionListExisting)
+
 	} else {
-		
+
 		personTransactionListExisting.Nino = key
 	}
 
 	fmt.Printf("Old Transaction list is: %s", personTransactionListExisting)
-	
+
 	for _, newTransaction := range personTransactionListNew.Transactions {
-		
+
 		fmt.Printf("New Transaction ID second loop is: %s", newTransaction.TransactionID)
-		
+
 		transactionFound := false
-		
+
 		for _, oldTransaction := range personTransactionListExisting.Transactions {
-			
+
 			fmt.Printf("Old Transaction ID second loop is: %s", oldTransaction.TransactionID)
-			
+
 			if newTransaction.TransactionID == oldTransaction.TransactionID {
 				transactionFound = true
 				break
 			}
-		}	
-		
+		}
+
 		if !transactionFound {
-			
-			personTransactionListExisting.Transactions = 
-				append(personTransactionListExisting.Transactions, newTransaction)	
-		}	
+
+			personTransactionListExisting.Transactions =
+				append(personTransactionListExisting.Transactions, newTransaction)
+		}
 	}
-	
+
 	fmt.Printf("Transaction to be created list is: %s", personTransactionListExisting)
 
 	if err != nil {
@@ -212,16 +215,101 @@ func (t *SimpleChaincode) createPaymentTransaction(stub shim.ChaincodeStubInterf
 	}
 
 	personTransactionListTobeCreatedAsBytes, err := json.Marshal(personTransactionListExisting)
-	
+
 	if err != nil {
 		fmt.Printf("In json.Marshal error: %s", err)
 		return nil, err
-	}	
-	
+	}
+
 	fmt.Printf("Transaction to be created list as bytes: %s", personTransactionListTobeCreatedAsBytes)
 
 	err = stub.PutState(key, personTransactionListTobeCreatedAsBytes)
-	
+
+	if err != nil {
+		fmt.Printf("In putstate error:  %s", err)
+		return nil, err
+	}
+	return nil, nil
+}
+
+// Modify payment transactions for a person
+func (t *SimpleChaincode) modifyPaymentTransactionOwningSystem(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var key, value string
+	var err error
+	fmt.Println("running modifyPaymentTransactionOwningSystem()")
+
+	if len(args) != 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2. name of the key and value to set")
+	}
+
+	key = args[0] //rename for funsies
+	value = args[1]
+
+	modifiedTransaction := Transaction{}
+
+	err = json.Unmarshal([]byte(value), &modifiedTransaction)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Printf("Modified Transaction records is: %s", modifiedTransaction)
+
+	personTransactionListExisting := PersonTransactionList{}
+
+	argsRead := []string{args[0]}
+
+	valAsbytes := []byte{}
+
+	valAsbytes, err = t.read(stub, argsRead)
+
+	if err != nil {
+		fmt.Printf("In t.read error: %s", err)
+		return nil, err
+	}
+
+	if valAsbytes != nil {
+
+		err = json.Unmarshal([]byte(valAsbytes), &personTransactionListExisting)
+
+	} else {
+
+		return nil, errors.New("No Payment records found for NINO: " + key)
+	}
+
+	fmt.Printf("Existing Transaction list is: %s", personTransactionListExisting)
+
+	transactionFound := false
+
+	for _, existingTransaction := range personTransactionListExisting.Transactions {
+
+		fmt.Printf("Existing Transaction ID in loop is: %s", existingTransaction.TransactionID)
+
+		if modifiedTransaction.TransactionID == existingTransaction.TransactionID {
+			
+			existingTransaction.OwningSystem = modifiedTransaction.OwningSystem
+			
+			transactionFound = true
+			break
+		}
+	}
+
+	if !transactionFound {
+
+		return nil, errors.New("No Payment record found for the ID: " + modifiedTransaction.TransactionID)
+	}
+
+	personTransactionListTobeCreatedAsBytes, err := json.Marshal(personTransactionListExisting)
+
+	if err != nil {
+		fmt.Printf("In json.Marshal error: %s", err)
+		return nil, err
+	}
+
+	fmt.Printf("Transaction to be created list as bytes: %s", personTransactionListTobeCreatedAsBytes)
+
+	err = stub.PutState(key, personTransactionListTobeCreatedAsBytes)
+
 	if err != nil {
 		fmt.Printf("In putstate error:  %s", err)
 		return nil, err
