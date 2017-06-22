@@ -280,22 +280,22 @@ func (t *SimpleChaincode) modifyPaymentTransactionOwningSystem(stub shim.Chainco
 	fmt.Printf("Existing Transaction list is: %s", personTransactionListExisting)
 
 	transactionFound := false
+	
+	for i := 0; i < len(personTransactionListExisting.Transactions); i++ {
 
-	for _, existingTransaction := range personTransactionListExisting.Transactions {
+		fmt.Printf("Existing Transaction ID in loop is: %s", personTransactionListExisting.Transactions[i].TransactionID)
+		
+		refExistingTransaction := &personTransactionListExisting.Transactions[i]		
 
-		fmt.Printf("Existing Transaction ID in loop is: %s", existingTransaction.TransactionID)
+		if modifiedTransaction.TransactionID == refExistingTransaction.TransactionID {
 
-		if modifiedTransaction.TransactionID == existingTransaction.TransactionID {
-			
-			refExTrans := &existingTransaction
-			
-			refExTrans.OwningSystem = modifiedTransaction.OwningSystem
-			
+			refExistingTransaction.OwningSystem = modifiedTransaction.OwningSystem
+
 			transactionFound = true
 			break
 		}
 	}
-
+	
 	if !transactionFound {
 
 		return nil, errors.New("No Payment record found for the ID: " + modifiedTransaction.TransactionID)
