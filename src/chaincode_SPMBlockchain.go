@@ -287,7 +287,9 @@ func (t *SimpleChaincode) modifyPaymentTransactionOwningSystem(stub shim.Chainco
 
 		if modifiedTransaction.TransactionID == existingTransaction.TransactionID {
 			
-			existingTransaction.OwningSystem = modifiedTransaction.OwningSystem
+			refExTrans := &existingTransaction
+			
+			refExTrans.OwningSystem = modifiedTransaction.OwningSystem
 			
 			transactionFound = true
 			break
